@@ -2,5 +2,5 @@
 
 EXTRA_VOLUMES=$1
 
-docker run -v ollama:/root/.ollama $EXTRA_VOLUMES -it ollama-docker:latest
+docker run --rm -v ollama:/root/.ollama $EXTRA_VOLUMES -it ollama-docker:latest
 
