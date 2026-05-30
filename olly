@@ -2,5 +2,13 @@
 
 EXTRA_VOLUMES=$1
 
-docker run --rm -v ollama:/root/.ollama $EXTRA_VOLUMES -it ollama-docker:latest
+# Mount current directory (or specified path) to /workspace in container
+# WORKDIR is already set in Dockerfile, we just need to mount the volume
+PROJECT_DIR="${2:-$(pwd)}"
+
+docker run --rm \
+  -v ollama:/root/.ollama \
+  -v "$PROJECT_DIR:/workspace" \
+  $EXTRA_VOLUMES \
+  -it ollama-docker:latest
 

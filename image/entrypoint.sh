@@ -9,28 +9,60 @@ until curl -s http://127.0.0.1:11434/api/tags | grep -q "models"; do
   sleep 1
 done
 
-echo "Ollama is ready. Safely generating models.json via file streams..."
+echo "Ollama is ready. Generating models.json with model properties..."
 
 mkdir -p /root/.pi/agent
 
-cat <<"EOF" > /root/.pi/agent/models.json
+# Generate models.json using jq to properly format the JSON
+curl -s http://127.0.0.1:11434/api/tags | jq '
 {
   "providers": {
     "ollama": {
       "api": "openai-completions",
       "apiKey": "ollama",
       "baseUrl": "http://127.0.0.1:11434/v1",
-      "models": [
-EOF
-
-curl -s http://127.0.0.1:11434/api/tags | awk -F'"' '{for(i=1;i<=NF;i++) if($i=="name" && $(i+2) != "name") print "{\"id\":\""$(i+2)"\",\"input\":[\"text\",\"image\"],\"reasoning\":true}"}' | xargs -d '\n' | sed 's/ /,/g' >> /root/.pi/agent/models.json
-
-cat <<"EOF" >> /root/.pi/agent/models.json
-      ]
+      "models": [.models[] | {
+        id: .name,
+        input: (
+          if (.name | test("llava|bakllava|moondream|vision|vl|VLM|qwen.*vl"; "i")) then
+            ["text", "image"]
+          else
+            ["text"]
+          end
+        ),
+        reasoning: (
+          if (.name | test("o1|o3|reasoning|think|qwen|glm|deepseek"; "i")) then
+            true
+          else
+            true
+          end
+        ),
+        contextWindow: (
+          if (.name | test("glm"; "i")) then 128000
+          elif (.name | test("qwen"; "i")) then 256000
+          elif (.name | test("llama-3|llama3"; "i")) then 128000
+          elif (.name | test("mistral|mixtral"; "i")) then 128000
+          elif (.name | test("gemma"; "i")) then 8192
+          elif (.name | test("phi-3|phi3"; "i")) then 128000
+          elif (.name | test("deepseek"; "i")) then 128000
+          else 128000
+          end
+        )
+      }]
     }
   }
 }
-EOF
+' > /root/.pi/agent/models.json
 
-echo "Launching Pi Harness"
+echo "models.json generated:"
+cat /root/.pi/agent/models.json | jq '.'
+
+echo ""
+echo "Current working directory: $(pwd)"
+echo "Checking for AGENTS.md files:"
+find . -name "AGENTS.md" -o -name "CLAUDE.md" 2>/dev/null | head -10
+
+echo ""
+echo "Launching Pi Harness..."
+echo ""
 exec ollama launch pi
