@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y nodejs \
 
 RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
-RUN mkdir -p /root/.pi/agent/
+RUN mkdir -p /root/.pi/agent/extensions
+
+COPY model-manager.ts /root/.pi/agent/extensions
 
 WORKDIR /workspace
 
