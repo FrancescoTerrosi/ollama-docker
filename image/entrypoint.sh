@@ -11,10 +11,10 @@ done
 
 echo "Ollama is ready. Generating models.json from model metadata..."
 
-mkdir -p /root/.pi/agent
+mkdir -p /home/olly/.pi/agent
 
 # Write the static header
-cat <<"EOF" > /root/.pi/agent/models.json
+cat <<"EOF" > /home/olly/.pi/agent/models.json
 {
   "providers": {
     "ollama": {
@@ -48,16 +48,16 @@ for MODEL in $(curl -s http://127.0.0.1:11434/api/tags | jq -r '.models[].name')
   if [ "$FIRST" = true ]; then
     FIRST=false
   else
-    echo "," >> /root/.pi/agent/models.json
+    echo "," >> /home/olly/.pi/agent/models.json
   fi
 
   # Write model entry
   printf '        {\n          "_launch": true,\n          "contextWindow": %s,\n          "id": "%s",\n          "input": %s,\n          "reasoning": %s\n        }' \
-    "$CTX" "$MODEL" "$INPUT" "$HAS_REASONING" >> /root/.pi/agent/models.json
+    "$CTX" "$MODEL" "$INPUT" "$HAS_REASONING" >> /home/olly/.pi/agent/models.json
 done
 
 # Close the JSON
-cat <<"EOF" >> /root/.pi/agent/models.json
+cat <<"EOF" >> /home/olly/.pi/agent/models.json
 
       ]
     }

@@ -3,7 +3,8 @@
 EXTRA_VOLUMES=$1
 
 docker run --rm \
-    -v ollama:/root/.ollama \
+    -v ollama:/home/olly/.ollama \
+    -v pi:/home/olly/.pi \
     -v $(pwd):/workspace \
     -it ollama-docker:latest
 

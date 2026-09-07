@@ -10,15 +10,20 @@ RUN apt-get update && apt-get install -y nodejs \
 
 RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
-RUN mkdir -p /root/.pi/agent/extensions
+RUN mkdir -p /home/olly/.ollama /home/olly/.pi/agent/extensions && chown -R 1000:1000 /home/olly
 
-COPY model-manager.ts /root/.pi/agent/extensions
+RUN mkdir -p /workspace && chown -R 1000:1000 /workspace
 
 WORKDIR /workspace
 
-COPY ./entrypoint.sh /entrypoint.sh
+ENV HOME=/home/olly
 
-RUN chmod +x /entrypoint.sh
+COPY --chown=1000:1000 entrypoint.sh /home/olly/entrypoint.sh
+COPY --chown=1000:1000 model-manager.ts /home/olly/.pi/agent/extensions/
 
-ENTRYPOINT ["/entrypoint.sh"]
+RUN chmod +x /home/olly/entrypoint.sh
+
+USER 1000:1000
+
+ENTRYPOINT ["/home/olly/entrypoint.sh"]
 
