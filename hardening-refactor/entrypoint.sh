@@ -1,13 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
+echo $OLLAMA_HOST
+
 # ── Configurable paths ─────────────────────────────────────────
 OLLAMA_HOST="${OLLAMA_HOST:-127.0.0.1}"
 OLLAMA_PORT="${OLLAMA_PORT:-11434}"
 PI_AGENT_DIR="${PI_AGENT_DIR:-/home/piagent/.pi/agent}"
 MODELS_FILE="${PI_AGENT_DIR}/models.json"
 
+
 echo 'Starting Ollama server...'
+
+echo "Ollama host: ${OLLAMA_HOST}:${OLLAMA_PORT}"
 
 ollama serve > /dev/null 2>&1 &
 
