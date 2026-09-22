@@ -11,7 +11,7 @@
 # ────────────────────────────────────────────────────────────────
 
 # ── Configurable defaults ──────────────────────────────────────
-IMAGE="${IMAGE:-ollama-docker:latest}"
+IMAGE="${IMAGE:-ollama-pi:latest}"
 WORKSPACE="${WORKSPACE:-$(pwd)/workspace}"
 MEMORY="${MEMORY:-8g}"
 CPUS="${CPUS:-4}"
