@@ -1,0 +1,59 @@
+#!/bin/bash
+# ────────────────────────────────────────────────────────────────
+# olly — Launch Ollama + Pi Coding Agent in Docker
+# ────────────────────────────────────────────────────────────────
+# Usage:
+#   ./olly                          # Default launch
+#   ./olly --network isolated       # Extra docker flags
+#   IMAGE=myimage:tag ./olly        # Override image
+#   WORKSPACE=./myproj ./olly       # Override workspace path
+#   MEMORY=16g CPUS=8 ./olly        # Resource limits
+# ────────────────────────────────────────────────────────────────
+
+# ── Configurable defaults ──────────────────────────────────────
+IMAGE="${IMAGE:-ollama-pi:latest}"
+WORKSPACE="${WORKSPACE:-$(pwd)/workspace}"
+MEMORY="${MEMORY:-8g}"
+CPUS="${CPUS:-4}"
+PIDS_LIMIT="${PIDS_LIMIT:-256}"
+NETWORK="${NETWORK:-}"              # leave empty for default bridge; set to "none" for air-gapped
+
+# ── Create workspace dir if it doesn't exist ───────────────────
+mkdir -p "$WORKSPACE"
+
+# ── Build docker run args ──────────────────────────────────────
+DOCKER_ARGS=(
+    --rm
+    --name "olly-$$"
+    --memory "$MEMORY"
+    --cpus "$CPUS"
+    --pids-limit "$PIDS_LIMIT"
+    --cap-drop=ALL
+    --cap-add=NET_RAW                # needed for ollama serve unless net=none
+    -v "ollama:/root/.ollama"
+    -v "$WORKSPACE:/workspace"
+    -it
+)
+
+# ── Optional network restriction ───────────────────────────────
+if [ -n "$NETWORK" ]; then
+    DOCKER_ARGS+=(--network "$NETWORK")
+fi
+
+# ── Extra user-supplied flags ──────────────────────────────────
+if [ $# -gt 0 ]; then
+    DOCKER_ARGS+=("$@")
+fi
+
+DOCKER_ARGS+=("$IMAGE")
+
+# ── Launch ─────────────────────────────────────────────────────
+echo "→ Image:      $IMAGE"
+echo "→ Workspace:  $WORKSPACE"
+echo "→ Memory:     $MEMORY  CPUs: $CPUS  Pids: $PIDS_LIMIT"
+if [ -n "$NETWORK" ]; then
+    echo "→ Network:    $NETWORK"
+fi
+echo ""
+
+exec docker run "${DOCKER_ARGS[@]}"

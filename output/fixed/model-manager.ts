@@ -1,16 +1,10 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { getAgentDir } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 // ── Config ──────────────────────────────────────────────────────────────────
-// Resolve the models.json path the same way pi itself does: honor an explicit
-// MODELS_PATH override, then pi's own agent-dir resolution (which respects
-// PI_CODING_AGENT_DIR and falls back to the current user's home directory).
-// Never hardcode a user's home (e.g. /root) — the agent may run deescalated.
-const MODELS_PATH =
-  process.env.MODELS_PATH || join(getAgentDir(), "models.json");
+const MODELS_PATH = process.env.MODELS_PATH || "/root/.pi/agent/models.json";
 
 // ── TypeBox Schemas ─────────────────────────────────────────────────────────
 

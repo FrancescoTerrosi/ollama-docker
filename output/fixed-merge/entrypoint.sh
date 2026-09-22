@@ -18,7 +18,7 @@ else
   OLLAMA_PORT="${OLLAMA_PORT:-11434}"
 fi
 OLLAMA_URL="http://${OLLAMA_HOSTNAME}:${OLLAMA_PORT}"
-PI_AGENT_DIR="${PI_AGENT_DIR:-/home/olly/.pi/agent}"
+PI_AGENT_DIR="${PI_AGENT_DIR:-/home/piagent/.pi/agent}"
 MODELS_FILE="${PI_AGENT_DIR}/models.json"
 
 # Make sure `ollama serve` binds the exact host:port we talk to
