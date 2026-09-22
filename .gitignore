@@ -1,0 +1,10 @@
+# Editor / backup files
+*.bkp
+*.bak
+*.new
+
+# Generated evaluation artifacts
+output/
+
+# Local workspace mounted into the container by ./olly
+/workspace/
